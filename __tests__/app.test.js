@@ -17,17 +17,16 @@ describe("GET /api/categories", () => {
     return request(app)
       .get("/api/categories")
       .expect(200)
-      .then(({ body }) => {
-        expect(body).toBeInstanceOf(Array);
+      .then(({ body: { categories } }) => {
+        expect(categories).toBeInstanceOf(Array);
       });
   });
   test("200 response returns array of objects with specific properties", () => {
     return request(app)
       .get("/api/categories")
       .expect(200)
-      .then(({ body }) => {
-        console.log(body, "<<<in test file");
-        body.forEach((category) => {
+      .then(({ body: { categories } }) => {
+        categories.forEach((category) => {
           expect(category).toEqual(
             expect.objectContaining({
               slug: expect.any(String),
