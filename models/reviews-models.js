@@ -18,3 +18,16 @@ exports.fetchReviewById = (review_id) => {
       return rows[0];
     });
 };
+
+exports.updateReviewById = (review_id, newVote) => {
+  const SQLParams = [review_id, newVote];
+  return connection
+    .query(
+      `UPDATE reviews SET votes = votes + $2
+        WHERE review_id = $1 RETURNING *`,
+      SQLParams
+    )
+    .then((result) => {
+      return result.rows[0];
+    });
+};
