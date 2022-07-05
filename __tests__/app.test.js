@@ -80,3 +80,70 @@ describe("GET /api/reviews/:review_id", () => {
       });
   });
 });
+
+describe("PATCH /api/reviews/:review_id", () => {
+  test("200 response returns review with updated votes", () => {
+    const votesObj = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/reviews/1")
+      .send(votesObj)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toBeInstanceOf(Object);
+        expect(body).toEqual({
+          title: "Agricola",
+          designer: "Uwe Rosenberg",
+          owner: "mallionaire",
+          review_img_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          review_body: "Farmyard fun!",
+          review_id: 1,
+          category: "euro game",
+          created_at: "2021-01-18T10:00:20.514Z",
+          votes: 2,
+        });
+      });
+  });
+  test("404 response returns error page not found when a review doesn't exist ", () => {
+    const votesObj = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/reviews/9090")
+      .expect(404)
+      .send(votesObj)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Page not found");
+      });
+  });
+  test("400 response returns bad request error when passed a string", () => {
+    const votesObj = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/reviews/notAValidId")
+      .expect(400)
+      .send(votesObj)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Error! Invalid ID, bad request");
+      });
+  });
+  test("400 response returns a bad request error when passed an invalid increases votes object key", () => {
+    const votesObj = { inc_voles: 1 };
+    return request(app)
+      .patch("/api/reviews/1")
+      .expect(400)
+      .send(votesObj)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Error! Invalid ID, bad request");
+      });
+  });
+  test("400 response returns a bad request error when passed an invalid increases votes object value", () => {
+    const votesObj = { inc_votes: "notValid" };
+    return request(app)
+      .patch("/api/reviews/1")
+      .expect(400)
+      .send(votesObj)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Error! Invalid ID, bad request");
+      });
+  });
+});
+
+// 400 passed something not increased votes
