@@ -17,7 +17,19 @@ exports.getReviewById = (req, res, next) => {
 exports.patchReviews = (req, res, next) => {
   const { review_id } = req.params;
   const newVote = req.body.inc_votes;
-  updateReviewById(review_id, newVote).then((review) => {
-    res.status(200).send(review);
-  });
+
+  if (typeof newVote !== "number") {
+    next({ msg: "Bad request" });
+  }
+
+  if (!req.body.inc_votes) {
+    next({ msg: "Bad request" });
+  }
+  updateReviewById(review_id, newVote)
+    .then((review) => {
+      res.status(200).send(review);
+    })
+    .catch((err) => {
+      next(err);
+    });
 };

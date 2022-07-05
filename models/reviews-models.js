@@ -28,6 +28,9 @@ exports.updateReviewById = (review_id, newVote) => {
       SQLParams
     )
     .then((result) => {
+      if (result.rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Page not found" });
+      }
       return result.rows[0];
     });
 };

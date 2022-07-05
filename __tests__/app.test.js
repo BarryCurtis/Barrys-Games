@@ -81,7 +81,7 @@ describe("GET /api/reviews/:review_id", () => {
   });
 });
 
-describe.only("PATCH /api/reviews/:review_id", () => {
+describe("PATCH /api/reviews/:review_id", () => {
   test("200 response returns review with updated votes", () => {
     const votesObj = { inc_votes: 1 };
     return request(app)
@@ -104,4 +104,36 @@ describe.only("PATCH /api/reviews/:review_id", () => {
         });
       });
   });
+  test("404 response returns error page not found when a review doesn't exist ", () => {
+    const votesObj = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/reviews/9090")
+      .expect(404)
+      .send(votesObj)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Page not found");
+      });
+  });
+  test("400 response returns bad request error when passed a string", () => {
+    const votesObj = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/reviews/notAValidId")
+      .expect(400)
+      .send(votesObj)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Error! Invalid ID, bad request");
+      });
+  });
+  test("400 response returns a bad request error when passed an invalid increases votes object", () => {
+    const votesObj = { inc_voles: "notValid" };
+    return request(app)
+      .patch("/api/reviews/notAValidId")
+      .expect(400)
+      .send(votesObj)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Error! Invalid ID, bad request");
+      });
+  });
 });
+
+// 400 passed something not increased votes
