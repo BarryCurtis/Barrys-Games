@@ -124,10 +124,20 @@ describe("PATCH /api/reviews/:review_id", () => {
         expect(msg).toBe("Error! Invalid ID, bad request");
       });
   });
-  test("400 response returns a bad request error when passed an invalid increases votes object", () => {
-    const votesObj = { inc_voles: "notValid" };
+  test("400 response returns a bad request error when passed an invalid increases votes object key", () => {
+    const votesObj = { inc_voles: 1 };
     return request(app)
-      .patch("/api/reviews/notAValidId")
+      .patch("/api/reviews/1")
+      .expect(400)
+      .send(votesObj)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Error! Invalid ID, bad request");
+      });
+  });
+  test("400 response returns a bad request error when passed an invalid increases votes object value", () => {
+    const votesObj = { inc_votes: "notValid" };
+    return request(app)
+      .patch("/api/reviews/1")
       .expect(400)
       .send(votesObj)
       .then(({ body: { msg } }) => {
