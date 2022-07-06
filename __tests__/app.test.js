@@ -173,7 +173,7 @@ describe("#6 GET /api/users", () => {
   });
 });
 
-describe.only("#7 GET /api/reviews/:review_id (comment count()", () => {
+describe("#7 GET /api/reviews/:review_id (comment count()", () => {
   test("200 response returns an object which contains comment_count", () => {
     return request(app)
       .get("/api/reviews/3")
@@ -213,4 +213,40 @@ describe.only("#7 GET /api/reviews/:review_id (comment count()", () => {
       });
   });
 });
-// 400 passed something not increased votes
+
+describe.only("#9 GET /api/reviews/:review_id/comments", () => {
+  test("200 response returns an array of comments for the given review_id", () => {
+    return request(app)
+      .get("/api/reviews/3/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toBeInstanceOf(Object);
+        expect(body).toEqual(
+          expect.objectContaining({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            review_id: expect.any(Number),
+          })
+        );
+      });
+  });
+  test("404 response when trying to return from a review with zero comments", () => {
+    return request(app)
+      .get("/api/reviews/1/comments")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("No comments for this ID");
+      });
+  });
+  test("400 response when inputting the wrong path", () => {
+    return request(app)
+      .get("/api/reviews/string/comments")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Error! Invalid ID, bad request");
+      });
+  });
+});
