@@ -146,4 +146,30 @@ describe("PATCH /api/reviews/:review_id", () => {
   });
 });
 
+describe.only("GET /api/users", () => {
+  test("200 response returns an array of objects with the specified properties", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body: { users } }) => {
+        users.forEach((user) => {
+          expect(user).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+  test("404 response returns an error page not found", () => {
+    return request(app)
+      .get("/api/user")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Page not found");
+      });
+  });
+});
 // 400 passed something not increased votes
