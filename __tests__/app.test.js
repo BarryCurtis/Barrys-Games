@@ -7,7 +7,7 @@ const request = require("supertest");
 beforeEach(() => seed(testData));
 afterAll(() => connection.end());
 
-describe("GET /api/categories", () => {
+describe("#3 GET /api/categories", () => {
   test("200 response returns with an array", () => {
     return request(app)
       .get("/api/categories")
@@ -41,7 +41,7 @@ describe("GET /api/categories", () => {
   });
 });
 
-describe("GET /api/reviews/:review_id", () => {
+describe("#4 GET /api/reviews/:review_id", () => {
   test("200 response returns an object containing specified properties", () => {
     return request(app)
       .get("/api/reviews/2")
@@ -81,7 +81,7 @@ describe("GET /api/reviews/:review_id", () => {
   });
 });
 
-describe("PATCH /api/reviews/:review_id", () => {
+describe("#5 PATCH /api/reviews/:review_id", () => {
   test("200 response returns review with updated votes", () => {
     const votesObj = { inc_votes: 1 };
     return request(app)
@@ -146,7 +146,7 @@ describe("PATCH /api/reviews/:review_id", () => {
   });
 });
 
-describe.only("GET /api/users", () => {
+describe("#6 GET /api/users", () => {
   test("200 response returns an array of objects with the specified properties", () => {
     return request(app)
       .get("/api/users")
@@ -166,6 +166,47 @@ describe.only("GET /api/users", () => {
   test("404 response returns an error page not found", () => {
     return request(app)
       .get("/api/user")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Page not found");
+      });
+  });
+});
+
+describe.only("#7 GET /api/reviews/:review_id (comment count()", () => {
+  test("200 response returns an object which contains comment_count", () => {
+    return request(app)
+      .get("/api/reviews/3")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toBeInstanceOf(Object);
+        expect(body).toEqual(
+          expect.objectContaining({
+            review_id: expect.any(Number),
+            title: expect.any(String),
+            designer: expect.any(String),
+            owner: expect.any(String),
+            review_img_url: expect.any(String),
+            review_body: expect.any(String),
+            category: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            comment_count: expect.any(Number),
+          })
+        );
+      });
+  });
+  test("400 response returns a bad request error when an invalid id is requested", () => {
+    return request(app)
+      .get("/api/reviews/notAValidId")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Error! Invalid ID, bad request");
+      });
+  });
+  test("404 response returns a path not found error when an ID is valid but does not exist ", () => {
+    return request(app)
+      .get("/api/reviews/9090")
       .expect(404)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Page not found");
