@@ -11,7 +11,6 @@ exports.fetchReviewById = (review_id) => {
       [review_id]
     )
     .then(({ rows }) => {
-      console.log(rows);
       if (rows.length === 0) {
         return Promise.reject({
           status: 404,
@@ -35,5 +34,24 @@ exports.updateReviewById = (review_id, newVote) => {
         return Promise.reject({ status: 404, msg: "Page not found" });
       }
       return result.rows[0];
+    });
+};
+
+exports.fetchReviews = () => {
+  return connection
+    .query(
+      `SELECT reviews.*, COUNT(comments.review_id)::INT AS comment_count
+      FROM reviews
+      LEFT JOIN comments ON comments.review_id = reviews.review_id
+      GROUP BY reviews.review_id`
+    )
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "Page not found",
+        });
+      }
+      return rows;
     });
 };

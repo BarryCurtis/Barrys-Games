@@ -4,6 +4,7 @@ const getCategories = require("./controllers/categories-controllers");
 const {
   getReviewById,
   patchReviews,
+  getReviews,
 } = require("./controllers/reviews-controllers");
 const { getUsers } = require("./controllers/users-controllers");
 app.use(express.json());
@@ -12,6 +13,7 @@ app.get("/api/categories", getCategories);
 app.get("/api/reviews/:review_id", getReviewById);
 app.patch("/api/reviews/:review_id", patchReviews);
 app.get("/api/users", getUsers);
+app.get("/api/reviews", getReviews);
 
 app.use("*", (err, req, res) => {
   console.log(msg, "<<<<first error handler");

@@ -173,7 +173,7 @@ describe("#6 GET /api/users", () => {
   });
 });
 
-describe.only("#7 GET /api/reviews/:review_id (comment count()", () => {
+describe("#7 GET /api/reviews/:review_id (comment count()", () => {
   test("200 response returns an object which contains comment_count", () => {
     return request(app)
       .get("/api/reviews/3")
@@ -207,6 +207,41 @@ describe.only("#7 GET /api/reviews/:review_id (comment count()", () => {
   test("404 response returns a path not found error when an ID is valid but does not exist ", () => {
     return request(app)
       .get("/api/reviews/9090")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Page not found");
+      });
+  });
+});
+
+describe("#8 GET /api/reviews", () => {
+  test("200 response returns an array of objects with specific properties", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.length).toBeGreaterThan(0);
+        body.forEach((review) => {
+          expect(review).toEqual(
+            expect.objectContaining({
+              owner: expect.any(String),
+              title: expect.any(String),
+              review_id: expect.any(Number),
+              category: expect.any(String),
+              review_img_url: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              review_body: expect.any(String),
+              designer: expect.any(String),
+              comment_count: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+  test("404 response returns an error page not found", () => {
+    return request(app)
+      .get("/api/review")
       .expect(404)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Page not found");
