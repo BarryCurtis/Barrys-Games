@@ -220,8 +220,8 @@ describe("#8 GET /api/reviews", () => {
       .get("/api/reviews")
       .expect(200)
       .then(({ body }) => {
-        expect(body.length).toBeGreaterThan(0);
-        body.forEach((review) => {
+        expect(body.reviews.length).toBeGreaterThan(0);
+        body.reviews.forEach((review) => {
           expect(review).toEqual(
             expect.objectContaining({
               owner: expect.any(String),
@@ -237,14 +237,6 @@ describe("#8 GET /api/reviews", () => {
             })
           );
         });
-      });
-  });
-  test("404 response returns an error page not found", () => {
-    return request(app)
-      .get("/api/review")
-      .expect(404)
-      .then(({ body: { msg } }) => {
-        expect(msg).toBe("Page not found");
       });
   });
 });
