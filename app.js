@@ -6,7 +6,6 @@ const {
   patchReviews,
 } = require("./controllers/reviews-controllers");
 const { getUsers } = require("./controllers/users-controllers");
-
 app.use(express.json());
 
 app.get("/api/categories", getCategories);
