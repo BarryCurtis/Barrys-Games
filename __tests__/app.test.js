@@ -215,6 +215,34 @@ describe("#7 GET /api/reviews/:review_id (comment count()", () => {
   });
 });
 
+
+describe("#8 GET /api/reviews", () => {
+  test("200 response returns an array of objects with specific properties", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.reviews.length).toBeGreaterThan(0);
+        body.reviews.forEach((review) => {
+          expect(review).toEqual(
+            expect.objectContaining({
+              owner: expect.any(String),
+              title: expect.any(String),
+              review_id: expect.any(Number),
+              category: expect.any(String),
+              review_img_url: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              review_body: expect.any(String),
+              designer: expect.any(String),
+              comment_count: expect.any(Number),
+
+            })
+          );
+        });
+      });
+  });
+
 describe("#9 GET /api/reviews/:review_id/comments", () => {
   test("200 response returns an array of comments for the given review_id", () => {
     return request(app)
@@ -231,12 +259,6 @@ describe("#9 GET /api/reviews/:review_id/comments", () => {
               author: expect.any(String),
               body: expect.any(String),
               review_id: expect.any(Number),
-            })
-          );
-        });
-      });
-  });
-
   test("200 response when trying to return from a review with zero comments", () => {
     return request(app)
       .get("/api/reviews/1/comments")
@@ -262,3 +284,7 @@ describe("#9 GET /api/reviews/:review_id/comments", () => {
       });
   });
 });
+
+});
+
+
