@@ -241,6 +241,9 @@ describe("#8 GET /api/reviews", () => {
       });
   });
 });
+
+
+
 describe("#9 GET /api/reviews/:review_id/comments", () => {
   test("200 response returns an array of comments for the given review_id", () => {
     return request(app)
@@ -284,6 +287,72 @@ describe("#9 GET /api/reviews/:review_id/comments", () => {
               expect(msg).toBe("Page not found");
             });
         });
+
       });
   });
+  describe("#10 POST /api/reviews/:review_id/comments", () => {
+  test("201 response returns a posted comment", () => {
+    const objComment = { username: "bainesface", body: "What a great game" };
+    return request(app)
+      .post("/api/reviews/3/comments")
+      .send(objComment)
+      .expect(201)
+      .then(({ body: { addedComment } }) => {
+        expect(addedComment).toEqual(
+          expect.objectContaining({
+            body: expect.any(String),
+            votes: expect.any(Number),
+            author: expect.any(String),
+            review_id: expect.any(Number),
+            created_at: expect.any(String),
+          })
+        );
+      });
+  });
+  test("400 response returns bad request when given an empty object", () => {
+    const objComment = {};
+    return request(app)
+      .post("/api/reviews/3/comments")
+      .send(objComment)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe(
+          "Invalid object passed please use format {username: , body:}"
+        );
+      });
+  });
+  test("400 response returns bad request when given an invalid object", () => {
+    const objComment = { body: "What a great game" };
+    return request(app)
+      .post("/api/reviews/3/comments")
+      .send(objComment)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe(
+          "Invalid object passed please use format {username: , body:}"
+        );
+      });
+  });
+  test("404 response returns a path not found error when given a review that doesn't exist'", () => {
+    const objComment = { username: "bainesface", body: "What a great game" };
+    return request(app)
+      .post("/api/reviews/666/comments")
+      .send(objComment)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Page not found");
+      });
+  });
+  test("404 response when given a username that doesn't exist in the database", () => {
+    const objComment = {
+      username: "Unknown",
+      body: "random comment",
+    };
+    return request(app)
+      .post("/api/reviews/3/comments")
+      .send(objComment)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Page not found");
+
 });
