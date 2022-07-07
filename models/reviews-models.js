@@ -58,8 +58,7 @@ exports.fetchReviews = () => {
 
 exports.addReviewComment = (review_id, username, body) => {
   if (!username || !body) {
-    console.log("inside first models");
-    return Promise.reject({ status: 400, msg: "Route not found" });
+    return Promise.reject({ status: 400, msg: "Invalid object passed" });
   }
   return connection
     .query(
@@ -70,7 +69,6 @@ exports.addReviewComment = (review_id, username, body) => {
       [body, username, review_id]
     )
     .then(({ rows }) => {
-      console.log("inside models EH");
       if (rows.length === 0) {
         return Promise.reject({
           status: 404,

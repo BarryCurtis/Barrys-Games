@@ -55,7 +55,7 @@ exports.postReviewComment = (req, res, next) => {
       res.status(201).send({ addedComment });
     })
     .catch((err) => {
-      console.log("inside controller EH");
+     
       next(err);
     });
 };

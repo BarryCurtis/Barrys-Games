@@ -242,7 +242,7 @@ describe("#8 GET /api/reviews", () => {
 });
 
 describe("#10 POST /api/reviews/:review_id/comments", () => {
-  test.only("201 response returns a posted comment", () => {
+  test("201 response returns a posted comment", () => {
     const objComment = { username: "bainesface", body: "What a great game" };
     return request(app)
       .post("/api/reviews/3/comments")
@@ -267,7 +267,7 @@ describe("#10 POST /api/reviews/:review_id/comments", () => {
       .send(objComment)
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Route not found");
+        expect(msg).toBe("Invalid object passed");
       });
   });
   test("400 response returns bad request when given an invalid object", () => {
@@ -277,13 +277,26 @@ describe("#10 POST /api/reviews/:review_id/comments", () => {
       .send(objComment)
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Route not found");
+        expect(msg).toBe("Invalid object passed");
       });
   });
   test("404 response returns a path not found error when given a review that doesn't exist'", () => {
     const objComment = { username: "bainesface", body: "What a great game" };
     return request(app)
       .post("/api/reviews/666/comments")
+      .send(objComment)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Page not found");
+      });
+  });
+  test("404 response when given a username that doesn't exist in the database", () => {
+    const objComment = {
+      username: "Unknown",
+      body: "random comment",
+    };
+    return request(app)
+      .post("/api/reviews/3/comments")
       .send(objComment)
       .expect(404)
       .then(({ body: { msg } }) => {
