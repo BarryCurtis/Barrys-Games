@@ -3,6 +3,7 @@ const app = require("../app");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data/index");
 const request = require("supertest");
+const { forEach } = require("../db/data/test-data/categories");
 
 beforeEach(() => seed(testData));
 afterAll(() => connection.end());
@@ -214,31 +215,34 @@ describe("#7 GET /api/reviews/:review_id (comment count()", () => {
   });
 });
 
-describe.only("#9 GET /api/reviews/:review_id/comments", () => {
+describe("#9 GET /api/reviews/:review_id/comments", () => {
   test("200 response returns an array of comments for the given review_id", () => {
     return request(app)
       .get("/api/reviews/3/comments")
       .expect(200)
       .then(({ body }) => {
-        expect(body).toBeInstanceOf(Object);
-        expect(body).toEqual(
-          expect.objectContaining({
-            comment_id: expect.any(Number),
-            votes: expect.any(Number),
-            created_at: expect.any(String),
-            author: expect.any(String),
-            body: expect.any(String),
-            review_id: expect.any(Number),
-          })
-        );
+        expect(body).toBeInstanceOf(Array);
+        body.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              review_id: expect.any(Number),
+            })
+          );
+        });
       });
   });
-  test("404 response when trying to return from a review with zero comments", () => {
+
+  test("200 response when trying to return from a review with zero comments", () => {
     return request(app)
       .get("/api/reviews/1/comments")
-      .expect(404)
-      .then(({ body: { msg } }) => {
-        expect(msg).toBe("No comments for this ID");
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toEqual([]);
       });
   });
   test("400 response when inputting the wrong path", () => {
@@ -247,6 +251,14 @@ describe.only("#9 GET /api/reviews/:review_id/comments", () => {
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Error! Invalid ID, bad request");
+      });
+  });
+  test("404 response when invalid review is given", () => {
+    return request(app)
+      .get("/api/reviews/9999/comments")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Page not found");
       });
   });
 });

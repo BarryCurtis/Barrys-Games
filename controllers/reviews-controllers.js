@@ -37,6 +37,9 @@ exports.patchReviews = (req, res, next) => {
 
 exports.getCommentsByReviewId = (req, res, next) => {
   const { review_id } = req.params;
+  fetchReviewById(review_id).catch((err) => {
+    next(err);
+  });
   fetchCommentsByReviewId(review_id)
     .then((comments) => {
       res.status(200).send(comments);

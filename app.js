@@ -16,11 +16,9 @@ app.get("/api/users", getUsers);
 app.get("/api/reviews/:review_id/comments", getCommentsByReviewId);
 
 app.use("*", (req, res, next) => {
-  console.log("first err handler");
   res.status(404).send({ msg: "Page not found" });
 });
 app.use((err, req, res, next) => {
-  console.log("custom err handler");
   if (err.status && err.msg) {
     res.status(err.status).send({ msg: err.msg });
   } else next(err);
