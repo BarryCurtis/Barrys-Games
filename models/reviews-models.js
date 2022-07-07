@@ -37,7 +37,6 @@ exports.updateReviewById = (review_id, newVote) => {
     });
 };
 
-
 exports.fetchCommentsByReviewId = (review_id) => {
   return connection
     .query(
@@ -48,7 +47,8 @@ exports.fetchCommentsByReviewId = (review_id) => {
     )
     .then((result) => {
       return result.rows;
-
+    });
+};
 exports.fetchReviews = () => {
   return connection
     .query(
@@ -65,6 +65,5 @@ exports.fetchReviews = () => {
         });
       }
       return rows;
-
     });
 };
