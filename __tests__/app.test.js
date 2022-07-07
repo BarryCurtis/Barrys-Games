@@ -3,7 +3,6 @@ const app = require("../app");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data/index");
 const request = require("supertest");
-const { forEach } = require("../db/data/test-data/categories");
 
 beforeEach(() => seed(testData));
 afterAll(() => connection.end());
@@ -242,8 +241,6 @@ describe("#8 GET /api/reviews", () => {
   });
 });
 
-
-
 describe("#9 GET /api/reviews/:review_id/comments", () => {
   test("200 response returns an array of comments for the given review_id", () => {
     return request(app)
@@ -263,34 +260,35 @@ describe("#9 GET /api/reviews/:review_id/comments", () => {
             })
           );
         });
-        test("200 response when trying to return from a review with zero comments", () => {
-          return request(app)
-            .get("/api/reviews/1/comments")
-            .expect(200)
-            .then(({ body }) => {
-              expect(body).toEqual([]);
-            });
-        });
-        test("400 response when inputting the wrong path", () => {
-          return request(app)
-            .get("/api/reviews/string/comments")
-            .expect(400)
-            .then(({ body: { msg } }) => {
-              expect(msg).toBe("Error! Invalid ID, bad request");
-            });
-        });
-        test("404 response when invalid review is given", () => {
-          return request(app)
-            .get("/api/reviews/9999/comments")
-            .expect(404)
-            .then(({ body: { msg } }) => {
-              expect(msg).toBe("Page not found");
-            });
-        });
-
       });
   });
-  describe("#10 POST /api/reviews/:review_id/comments", () => {
+  test("200 response when trying to return from a review with zero comments", () => {
+    return request(app)
+      .get("/api/reviews/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toEqual([]);
+      });
+  });
+  test("400 response when inputting the wrong path", () => {
+    return request(app)
+      .get("/api/reviews/string/comments")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Error! Invalid ID, bad request");
+      });
+  });
+  test("404 response when invalid review is given", () => {
+    return request(app)
+      .get("/api/reviews/9999/comments")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Page not found");
+      });
+  });
+});
+
+describe("#10 POST /api/reviews/:review_id/comments", () => {
   test("201 response returns a posted comment", () => {
     const objComment = { username: "bainesface", body: "What a great game" };
     return request(app)
@@ -340,7 +338,7 @@ describe("#9 GET /api/reviews/:review_id/comments", () => {
       .send(objComment)
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Page not found");
+        expect(msg).toBe("Route not found");
       });
   });
   test("404 response when given a username that doesn't exist in the database", () => {
@@ -353,6 +351,70 @@ describe("#9 GET /api/reviews/:review_id/comments", () => {
       .send(objComment)
       .expect(404)
       .then(({ body: { msg } }) => {
+        expect(msg).toBe("Route not found");
+      });
+  });
+});
+describe("#11 GET /api/reviews (queries)", () => {
+  test("200 response returns reviews using defaults", () => {
+    return request(app)
+      .get(`/api/reviews`)
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("200 response will return reviews in order of the given query", () => {
+    return request(app)
+      .get(`/api/reviews?sort_by=votes`)
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeSortedBy("votes", {
+          descending: true,
+          coerce: true,
+        });
+      });
+  });
+  test("200 response will return reviews in order of the given query with a given category", () => {
+    return request(app)
+      .get(`/api/reviews?sort_by=votes&category=dexterity`)
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        reviews.forEach((review) => {
+          expect(review).toEqual(
+            expect.objectContaining({
+              category: "dexterity",
+            })
+          );
+        });
+        expect(reviews).toBeSortedBy("votes", {
+          descending: true,
+          coerce: true,
+        });
+      });
+  });
+  test("400 response returns an error when an invalid sort_by is given", () => {
+    return request(app)
+      .get(`/api/reviews?sort_by=northcoders`)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Sort by query invalid");
+      });
+  });
+  test("400 response returns an error invalid order query is given", () => {
+    return request(app)
+      .get(`/api/reviews?sort_by=votes&order=down`)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Order by query invalid");
+      });
+  });
+  test("404 response returns an error when passed an invalid category", () => {
+    return request(app)
+      .get(`/api/reviews?category=aaaaaaaa`)
+      .expect(404)
+      .then(({ body: { msg } }) => {
         expect(msg).toBe("Page not found");
-
+      });
+  });
 });

@@ -44,12 +44,17 @@ exports.getCommentsByReviewId = (req, res, next) => {
   fetchReviewById(review_id).catch((err) => {
     next(err);
   });
-  fetchCommentsByReviewId(review_id).then((comments) => {
-    res.status(200).send(comments);
-  });
+  fetchCommentsByReviewId(review_id)
+    .then((comments) => {
+      res.status(200).send(comments);
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 exports.getReviews = (req, res, next) => {
-  fetchReviews()
+  const { sort_by, order, category } = req.query;
+  fetchReviews(sort_by, order, category)
     .then((reviews) => {
       res.status(200).send({ reviews: reviews });
     })
@@ -67,7 +72,6 @@ exports.postReviewComment = (req, res, next) => {
       res.status(201).send({ addedComment });
     })
     .catch((err) => {
-     
       next(err);
     });
 };

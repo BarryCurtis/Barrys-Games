@@ -10,9 +10,6 @@ const {
   getReviews,
 
   postReviewComment,
-
-
-
 } = require("./controllers/reviews-controllers");
 const { getUsers } = require("./controllers/users-controllers");
 app.use(express.json());
@@ -23,10 +20,9 @@ app.patch("/api/reviews/:review_id", patchReviews);
 app.get("/api/users", getUsers);
 
 app.get("/api/reviews/:review_id/comments", getCommentsByReviewId);
-
 app.get("/api/reviews", getReviews);
-app.post("/api/reviews/:review_id/comments", postReviewComment);
 
+app.post("/api/reviews/:review_id/comments", postReviewComment);
 
 app.use("*", (req, res, next) => {
   res.status(404).send({ msg: "Page not found" });

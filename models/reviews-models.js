@@ -49,23 +49,64 @@ exports.fetchCommentsByReviewId = (review_id) => {
       return result.rows;
     });
 };
-exports.fetchReviews = () => {
-  return connection
-    .query(
-      `SELECT reviews.*, COUNT(comments.review_id)::INT AS comment_count
+exports.fetchReviews = (sort_by = "created_at", order = "DESC", category) => {
+  const reviews_columns = [
+    "title",
+    "designer",
+    "owner",
+    "review_img_url",
+    "review_body",
+    "category",
+    "created_at",
+    "votes",
+    "review_id",
+  ];
+
+  if (!reviews_columns.includes(sort_by)) {
+    return Promise.reject({ status: 400, msg: "Sort by query invalid" });
+  }
+  if (!["ASC", "DESC", "asc", "desc"].includes(order)) {
+    return Promise.reject({ status: 400, msg: "Order by query invalid" });
+  }
+  if (category) {
+    return connection
+      .query(
+        `SELECT reviews.*, COUNT(comments.review_id)::INT AS comment_count
       FROM reviews
       LEFT JOIN comments ON comments.review_id = reviews.review_id
-      GROUP BY reviews.review_id`
-    )
-    .then(({ rows }) => {
-      if (rows.length === 0) {
-        return Promise.reject({
-          status: 404,
-          msg: "Page not found",
-        });
-      }
-      return rows;
-    });
+      WHERE reviews.category = $1
+      GROUP BY reviews.review_id
+      ORDER BY ${sort_by} ${order}`,
+        [category]
+      )
+      .then(({ rows }) => {
+        if (rows.length === 0) {
+          return Promise.reject({
+            status: 404,
+            msg: "Page not found",
+          });
+        }
+        return rows;
+      });
+  } else {
+    return connection
+      .query(
+        `SELECT reviews.*, COUNT(comments.review_id)::INT AS comment_count
+    FROM reviews
+    LEFT JOIN comments ON comments.review_id = reviews.review_id
+       GROUP BY reviews.review_id
+    ORDER BY ${sort_by} ${order}`
+      )
+      .then(({ rows }) => {
+        if (rows.length === 0) {
+          return Promise.reject({
+            status: 404,
+            msg: "Page not found",
+          });
+        }
+        return rows;
+      });
+  }
 };
 
 exports.addReviewComment = (review_id, username, body) => {
