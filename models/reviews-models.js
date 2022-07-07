@@ -55,3 +55,28 @@ exports.fetchReviews = () => {
       return rows;
     });
 };
+
+exports.addReviewComment = (review_id, username, body) => {
+  if (!username || !body) {
+    console.log("inside first models");
+    return Promise.reject({ status: 400, msg: "Route not found" });
+  }
+  return connection
+    .query(
+      `INSERT INTO comments
+    (body, author, review_id)
+    VALUES ($1, $2, $3) RETURNING *;
+    `,
+      [body, username, review_id]
+    )
+    .then(({ rows }) => {
+      console.log("inside models EH");
+      if (rows.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "Page not found",
+        });
+      }
+      return rows[0];
+    });
+};

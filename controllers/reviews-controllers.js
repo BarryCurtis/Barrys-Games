@@ -2,6 +2,7 @@ const {
   fetchReviewById,
   updateReviewById,
   fetchReviews,
+  addReviewComment,
 } = require("../models/reviews-models");
 
 exports.getReviewById = (req, res, next) => {
@@ -41,6 +42,20 @@ exports.getReviews = (req, res, next) => {
       res.status(200).send({ reviews: reviews });
     })
     .catch((err) => {
+      next(err);
+    });
+};
+
+exports.postReviewComment = (req, res, next) => {
+  const { review_id } = req.params;
+  const { username, body } = req.body;
+
+  addReviewComment(review_id, username, body)
+    .then((addedComment) => {
+      res.status(201).send({ addedComment });
+    })
+    .catch((err) => {
+      console.log("inside controller EH");
       next(err);
     });
 };
