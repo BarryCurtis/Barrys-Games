@@ -58,7 +58,10 @@ exports.fetchReviews = () => {
 
 exports.addReviewComment = (review_id, username, body) => {
   if (!username || !body) {
-    return Promise.reject({ status: 400, msg: "Invalid object passed" });
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid object passed please use format {username: , body:}",
+    });
   }
   return connection
     .query(

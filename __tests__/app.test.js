@@ -267,7 +267,9 @@ describe("#10 POST /api/reviews/:review_id/comments", () => {
       .send(objComment)
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Invalid object passed");
+        expect(msg).toBe(
+          "Invalid object passed please use format {username: , body:}"
+        );
       });
   });
   test("400 response returns bad request when given an invalid object", () => {
@@ -277,7 +279,9 @@ describe("#10 POST /api/reviews/:review_id/comments", () => {
       .send(objComment)
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Invalid object passed");
+        expect(msg).toBe(
+          "Invalid object passed please use format {username: , body:}"
+        );
       });
   });
   test("404 response returns a path not found error when given a review that doesn't exist'", () => {
