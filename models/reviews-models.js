@@ -37,6 +37,18 @@ exports.updateReviewById = (review_id, newVote) => {
     });
 };
 
+
+exports.fetchCommentsByReviewId = (review_id) => {
+  return connection
+    .query(
+      `SELECT * FROM comments
+    LEFT JOIN reviews ON comments.review_id = reviews.review_id
+    WHERE reviews.review_id = $1`,
+      [review_id]
+    )
+    .then((result) => {
+      return result.rows;
+
 exports.fetchReviews = () => {
   return connection
     .query(
@@ -53,5 +65,6 @@ exports.fetchReviews = () => {
         });
       }
       return rows;
+
     });
 };
