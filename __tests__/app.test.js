@@ -453,3 +453,18 @@ describe("#12 DELETE /api/comments/:comment_id", () => {
       });
   });
 });
+
+describe("#13 GET /api", () => {
+  test("200 response and endpoints JSON", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toEqual(
+          expect.objectContaining({
+            endpoints: expect.any(Object),
+          })
+        );
+      });
+  });
+});

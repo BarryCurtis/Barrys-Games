@@ -1,4 +1,5 @@
 const express = require("express");
+const { fetchEndPoints } = require("./controllers/api-controllers");
 const app = express();
 const getCategories = require("./controllers/categories-controllers");
 const { deleteCommentById } = require("./controllers/comments-controllers");
@@ -13,8 +14,10 @@ const {
   postReviewComment,
 } = require("./controllers/reviews-controllers");
 const { getUsers } = require("./controllers/users-controllers");
+
 app.use(express.json());
 
+app.get("/api", fetchEndPoints);
 app.get("/api/categories", getCategories);
 app.get("/api/reviews/:review_id", getReviewById);
 app.patch("/api/reviews/:review_id", patchReviews);
