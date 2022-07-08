@@ -9,7 +9,6 @@ exports.destroyCommentById = (comment_id) => {
       [comment_id]
     )
     .then(({ rows }) => {
-      console.log(rows, "<<<<<< models");
       if (rows.length === 0) {
         return Promise.reject({ status: 404, msg: "Page not found" });
       }

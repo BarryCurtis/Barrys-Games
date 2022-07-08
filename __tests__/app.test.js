@@ -425,6 +425,14 @@ describe("#12 DELETE /api/comments/:comment_id", () => {
       .expect(204)
       .then(({ body }) => {
         expect(body).toEqual({});
+      })
+      .then(() => {
+        return request(app)
+          .get("/api/comments/2")
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Page not found");
+          });
       });
   });
   test("404 response when given an id that does not exist", () => {
