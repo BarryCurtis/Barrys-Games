@@ -418,3 +418,30 @@ describe("#11 GET /api/reviews (queries)", () => {
       });
   });
 });
+describe("#12 DELETE /api/comments/:comment_id", () => {
+  test("204 response returns an empty object", () => {
+    return request(app)
+      .delete("/api/comments/2")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+      });
+  });
+  test("404 response when given an id that does not exist", () => {
+    return request(app)
+      .delete("/api/comments/666")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Page not found");
+      });
+  });
+
+  test("400 response when given an invalid comment id", () => {
+    return request(app)
+      .delete("/api/comments/barry")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Error! Invalid ID, bad request");
+      });
+  });
+});
