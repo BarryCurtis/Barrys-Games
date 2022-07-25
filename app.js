@@ -1,3 +1,4 @@
+const cors = require("cors");
 const express = require("express");
 const { fetchEndPoints } = require("./controllers/api-controllers");
 const app = express();
@@ -14,7 +15,6 @@ const {
   postReviewComment,
 } = require("./controllers/reviews-controllers");
 const { getUsers } = require("./controllers/users-controllers");
-const cors = require("cors");
 
 app.use(cors());
 
