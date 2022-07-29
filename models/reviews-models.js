@@ -60,6 +60,7 @@ exports.fetchReviews = (sort_by = "created_at", order = "DESC", category) => {
     "created_at",
     "votes",
     "review_id",
+    "comment_count",
   ];
 
   if (!reviews_columns.includes(sort_by)) {
